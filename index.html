@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visor Catastral: Lote 3A - 3B</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="48x48" href="icon.png">
+  <link rel="apple-touch-icon" sizes="48x48" href="icon.png">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+
+  <!-- CSS personalizado -->
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Panel -->
+    <div class="panel-capas" id="panelCapas">
+      <div class="panel-header">
+        <h3>Visor Catastral</h3>
+        <button class="toggle-btn" id="toggleBtn">◀</button>
+      </div>
+
+      <div class="panel-content">
+        <!-- Buscador -->
+        <div class="buscador-section">
+          <h4 class="section-title">Buscador</h4>
+
+          <label for="search-distrito">Distrito</label>
+          <select id="search-distrito">
+            <option value="">-- Seleccionar --</option>
+            <option value="150112">Independencia</option>
+            <option value="150110">Comas</option>
+          </select>
+
+          <label for="search-sector">Sector</label>
+          <input type="text" id="search-sector" placeholder="Ej: 01">
+
+          <label for="search-manzana">Manzana</label>
+          <input type="text" id="search-manzana" placeholder="Ej: 018">
+
+          <label for="search-lote">Lote</label>
+          <input type="text" id="search-lote" placeholder="Ej: 010">
+
+
+          <button id="btn-search">Buscar</button>
+          <div id="search-result" class="search-result"></div>
+        </div>
+
+        <hr class="sep">
+
+        <!-- Capas -->
+        <div class="control-capas">
+          <h4 class="section-title">Controlador de Capas</h4>
+
+          <div class="grupo">
+            <div class="grupo-header" data-target="grupo-obras">
+              <span>Obra complementaria</span>
+              <span class="arrow">▸</span>
+            </div>
+            <div class="grupo-body closed" id="grupo-obras">
+              <div class="capa-item">
+                <label><input type="checkbox" id="layer-obra-1"><span>Obra complementaria 1</span></label>
+              </div>
+              <div class="capa-item">
+                <label><input type="checkbox" id="layer-obra-2"><span>Obra complementaria 2</span></label>
+              </div>
+              <div class="capa-item">
+                <label><input type="checkbox" id="layer-obra-3"><span>Obra complementaria 3</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="grupo" style="margin-top:12px;">
+            <div class="grupo-header" data-target="grupo-const">
+              <span>Construcción</span>
+              <span class="arrow">▸</span>
+            </div>
+            <div class="grupo-body closed" id="grupo-const">
+              <div class="pisos-box" style="margin-top:0;border-top:none;padding-top:0;">
+                <div id="pisos-container" class="pisos-container">
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Capas sueltas -->
+          <div class="capa-item" style="margin-top:12px;">
+            <label><input type="checkbox" id="layer-uca"><span>UCA</span></label>
+          </div>
+          <div class="capa-item">
+            <label><input type="checkbox" id="layer-puerta"><span>Puertas</span></label>
+          </div>
+
+          <!-- Capas base (libres, inician encendidas) -->
+          <div class="capa-item" style="margin-top:10px;">
+            <label><input type="checkbox" id="layer-base-manzana" checked><span>Manzana</span></label>
+          </div>
+          <div class="capa-item">
+            <label><input type="checkbox" id="layer-base-lote" checked><span>Lote</span></label>
+          </div>
+          <div class="capa-item">
+            <label><input type="checkbox" id="layer-base-edifica" checked><span>Edifica</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mapa -->
+    <div id="map"></div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <!-- Leaflet Pattern (rellenos con tramas) -->
+  <script src="https://unpkg.com/leaflet.pattern@0.0.4/dist/leaflet.pattern.js"></script>
+
+  <!-- Script -->
+  <script src="js/map.js"></script>
+
+  <!-- Modal selector de distrito -->
+  <div id="district-modal" class="district-modal" aria-hidden="true">
+    <div class="district-modal-card" role="dialog" aria-modal="true" aria-labelledby="district-modal-title">
+      <h2 id="district-modal-title">¿Qué distrito deseas visualizar?</h2>
+      <p class="district-modal-sub">Puedes cambiarlo luego en el buscador.</p>
+
+      <div class="district-modal-actions">
+        <button type="button" class="district-btn" data-ubigeo="150110" data-name="Comas">
+          <span class="district-btn-title">Comas</span>
+</button>
+
+        <button type="button" class="district-btn" data-ubigeo="150112" data-name="Independencia">
+          <span class="district-btn-title">Independencia</span>
+</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1398,6 +1398,58 @@ map.on("click", function(e) {
     }
   }
 
+
+  // --- PRIORIDAD 4: Edifica (solo si "Ver atributos" está activo) ---
+  const _attrEdificaOn = (() => {
+    const a = document.getElementById("attr-base-edifica");
+    const b = document.getElementById("layer-base-edifica");
+    return !!(a && a.checked && b && b.checked);
+  })();
+
+  if (_attrEdificaOn) {
+    const edHit = _pickBestFromLayerGroup(layerEdifica, (lyr) => {
+      const props = (lyr && lyr.feature && lyr.feature.properties) ? lyr.feature.properties : null;
+      return props ? { title: "Edifica", properties: props } : null;
+    });
+
+    if (edHit) {
+      try { selectGeoJSON(edHit.lyr && edHit.lyr.toGeoJSON ? edHit.lyr.toGeoJSON() : null); } catch(e) {}
+      const html = popupHtml(edHit.payload.title, edHit.payload.properties);
+      L.popup({ maxWidth: 340 })
+        .setLatLng(e.latlng)
+        .setContent(html)
+        .openOn(map);
+      return;
+    }
+  }
+
+  // --- PRIORIDAD 5: Lote (solo si "Ver atributos" está activo) ---
+  const _attrLoteOn = (() => {
+    const a = document.getElementById("attr-base-lote");
+    const b = document.getElementById("layer-base-lote");
+    return !!(a && a.checked && b && b.checked);
+  })();
+
+  if (_attrLoteOn) {
+    const ltHit = _pickBestFromLayerGroup(layerLote, (lyr) => {
+      const props = (lyr && lyr.feature && lyr.feature.properties) ? lyr.feature.properties : null;
+      if (!props) return null;
+      const v = props[GEO.fields.cod_lote];
+      const title = (v !== undefined && v !== null && String(v).trim() !== "") ? `Lote ${v}` : "Lote";
+      return { title, properties: props };
+    });
+
+    if (ltHit) {
+      try { selectGeoJSON(ltHit.lyr && ltHit.lyr.toGeoJSON ? ltHit.lyr.toGeoJSON() : null); } catch(e) {}
+      const html = popupHtml(ltHit.payload.title, ltHit.payload.properties);
+      L.popup({ maxWidth: 340 })
+        .setLatLng(e.latlng)
+        .setContent(html)
+        .openOn(map);
+      return;
+    }
+  }
+
 });
 
 document.addEventListener("change", (e) => {
@@ -2082,7 +2134,9 @@ if (toggleBtn && panelCapas) {
 
 // ===== Accordion groups =====
 document.querySelectorAll(".grupo-header").forEach((hdr) => {
-  hdr.addEventListener("click", () => {
+  hdr.addEventListener("click", (ev) => {
+    // Evitar que el click del checkbox/label del header abra/cierre el grupo
+    if (ev && ev.target && ev.target.closest && ev.target.closest("input, label")) return;
     const targetId = hdr.getAttribute("data-target");
     const body = document.getElementById(targetId);
     if (!body) return;
@@ -2580,6 +2634,32 @@ bindToggle("layer-base-edifica",
 );
 
 
+
+
+
+// Sub-opciones: "Ver atributos" para capas base (se habilitan solo si la capa está visible)
+(function () {
+  function sync(attrId, baseId) {
+    const attr = document.getElementById(attrId);
+    const base = document.getElementById(baseId);
+    if (!attr || !base) return;
+
+    const apply = () => {
+      if (!base.checked) {
+        attr.checked = false;
+        attr.disabled = true;
+      } else {
+        attr.disabled = false;
+      }
+    };
+
+    base.addEventListener("change", apply);
+    apply();
+  }
+
+  sync("attr-base-lote", "layer-base-lote");
+  sync("attr-base-edifica", "layer-base-edifica");
+})();
 
 bindToggle("layer-obra-1",
   async () => {  if (!obras1Layer) obras1Layer = await loadObra(1);
